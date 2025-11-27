@@ -1,0 +1,15 @@
+# Ignorar arquivos gerados
+.next
+node_modules
+dist
+build
+coverage
+
+# Ignorar arquivos de lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Ignorar arquivos de configuração
+.env
+.env.local
