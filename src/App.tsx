@@ -28,6 +28,23 @@ export default function App() {
             </p>
           </div>
         </div>
+        <div className='text-md'>
+          {connected ? (
+            <span className='text-green-400'>
+              <span className='text-3xl mr-2 mb-2 inline-block align-middle'>
+                ●
+              </span>
+              Conectado
+            </span>
+          ) : (
+            <span className='text-red-400'>
+              <span className='text-3xl mr-2 mb-2 inline-block align-middle'>
+                ●
+              </span>
+              Desconectado
+            </span>
+          )}
+        </div>
         <div className='flex flex-col items-center sm:items-end'>
           <p className='text-[#9dabb9] text-sm sm:text-base font-normal leading-normal'>
             Última atualização: {ultimaAtualizacao || '---'}
