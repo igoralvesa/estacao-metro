@@ -15,7 +15,6 @@ Sistema completo para monitoramento de estações de metrô com backend Node.js 
 
    ```bash
    git clone https://github.com/igoralvesa/estacao-metro.git
-   cd estacao-metro
    ```
 
 2. **Suba a aplicação** (isso vai instalar todas as dependências automaticamente):
