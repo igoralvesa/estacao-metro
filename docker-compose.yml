@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: estacao-metro-backend
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      - MQTT_URL=mqtt://jackal.rmq.cloudamqp.com:1883
+      - MQTT_USER=czeerhjr:czeerhjr
+      - MQTT_PASS=uWTrByb5tyInpDfBtyjEus9-OqiP4Kh3
+      - MQTT_TOPIC=metro/state
+      - FRONTEND_URL=*
+    networks:
+      - metro-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=http://localhost:3001
+        - VITE_SOCKET_CONNECT_TIMEOUT_MS=10000
+    container_name: estacao-metro-frontend
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    networks:
+      - metro-network
+    restart: unless-stopped
+
+networks:
+  metro-network:
+    driver: bridge
