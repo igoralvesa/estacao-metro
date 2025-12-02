@@ -15,12 +15,21 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // Tipos baseados no JSON do ESP32
 interface EmbarcadoMessage {
-  metro_count: number;        // pessoas no vagão
-  platform1_count: number;     // pessoas na plataforma (Estação Central)
-  platform2_count: number;     // pessoas na plataforma (Estação Norte)
-  daily_total: number;        // total do dia
-  timestamp: number;          // segundos desde boot do ESP32
-  event: 'train_board' | 'train_unboard' | 'platform_enter_cat1' | 'platform_enter_cat2' | 'platform_exit_cat1' | 'platform_exit_cat2' | 'none';
+  metro_count: number; // pessoas no vagão
+  platform1_count: number; // pessoas na plataforma (Estação Central)
+  platform2_count: number; // pessoas na plataforma (Estação Norte)
+  // daily total => platform1_total + platform2_total
+  platform1_total: number; // total na plataforma (Estação Central)
+  platform2_total: number; // total na plataforma (Estação Norte)
+  timestamp: number; // segundos desde boot do ESP32
+  event:
+    | 'train_board'
+    | 'train_unboard'
+    | 'platform_enter_cat1'
+    | 'platform_enter_cat2'
+    | 'platform_exit_cat1'
+    | 'platform_exit_cat2'
+    | 'none';
 }
 
 // Formato enviado para o frontend
@@ -38,23 +47,25 @@ interface FrontendData {
     totalHoje: number;
   };
   ultimaAtualizacao: string;
+  daily_total: number;
 }
 
 // Estado atual (dados das duas estações)
 let currentState: FrontendData = {
   estacaoCentral: {
-    aguardando: 0,      // platform1_count do ESP32
-    totalHoje: 0,       // daily_total do ESP32
+    aguardando: 0, // platform1_count do ESP32
+    totalHoje: 0, // daily_total da estacão central
   },
   proximoTrem: {
-    ocupados: 0,        // metro_count do ESP32
-    total: 300,         // capacidade máxima (fixo, conforme seu código ESP32)
+    ocupados: 0, // metro_count do ESP32
+    total: 300, // capacidade máxima (fixo, conforme seu código ESP32)
   },
   estacaoNorte: {
-    aguardando: 0,      // platform2_count do ESP32
-    totalHoje: 0,       // daily_total do ESP32 (compartilhado)
+    aguardando: 0, // platform2_count do ESP32
+    totalHoje: 0, // daily_total da estação norte
   },
   ultimaAtualizacao: new Date().toLocaleTimeString('pt-BR'),
+  daily_total: 0,
 };
 
 // Configura Socket.io
@@ -74,17 +85,20 @@ function processarMensagem(msg: EmbarcadoMessage): void {
 
   // Estação Central (platform1)
   currentState.estacaoCentral.aguardando = msg.platform1_count;
-  currentState.estacaoCentral.totalHoje = msg.daily_total;
-  
+  currentState.estacaoCentral.totalHoje = msg.platform1_total;
+
   // Vagão (metrô)
   currentState.proximoTrem.ocupados = msg.metro_count;
-  
+
   // Estação Norte (platform2)
   currentState.estacaoNorte.aguardando = msg.platform2_count;
-  currentState.estacaoNorte.totalHoje = msg.daily_total; // compartilha o total diário
-  
+  currentState.estacaoNorte.totalHoje = msg.platform2_total;
+
   // Atualiza timestamp
   currentState.ultimaAtualizacao = new Date().toLocaleTimeString('pt-BR');
+
+  // Total diário
+  currentState.daily_total = msg.platform1_total + msg.platform2_total;
 
   console.log('\n📤 Estado atualizado enviado para frontend:');
   console.log(JSON.stringify(currentState, null, 2));
@@ -156,7 +170,7 @@ io.on('connection', (socket) => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\n⏹️  Encerrando servidor...');
-  
+
   io.close(() => {
     console.log('✅ WebSocket fechado');
   });
@@ -166,7 +180,7 @@ process.on('SIGINT', async () => {
       console.log('✅ Cliente MQTT finalizado');
     });
   }
-  
+
   console.log('✅ Conexões fechadas');
   process.exit(0);
 });

@@ -68,7 +68,7 @@ export default function App() {
           </div>
           <div className='text-center mt-auto pt-4 border-t border-white/10'>
             <p className='text-[#9dabb9] text-lg font-medium leading-normal'>
-              Total de passageiros hoje
+              Total de passageiros na estação hoje
             </p>
             <p className='text-white tracking-tight text-5xl font-bold leading-none mt-2'>
               {estacaoCentral?.totalHoje ?? '---'}
@@ -88,8 +88,19 @@ export default function App() {
             <p className='text-[#9dabb9] text-lg font-medium leading-normal mt-4'>
               Ocupação (ocupado/total)
             </p>
-            <p className='text-white tracking-tight text-7xl font-bold leading-none mt-2'>
-              {proximoTrem?.ocupados ?? '---'}/{proximoTrem?.total ?? '---'}
+            <p className='text-white font-bold text-5xl tracking-tight mt-4 leading-none'>
+              {proximoTrem?.ocupados ?? '---'}
+              <span className='font-bold text-5xl text-white/70'>
+                /{proximoTrem?.total ?? '---'}
+              </span>
+            </p>
+          </div>
+          <div className='text-center mt-auto pt-4 border-t border-primary/50'>
+            <p className='text-[#9dabb9] text-lg font-medium leading-normal'>
+              Total de passageiros hoje
+            </p>
+            <p className='text-white tracking-tight text-5xl font-bold leading-none mt-2'>
+              {state?.daily_total ?? '---'}
             </p>
           </div>
         </div>
@@ -109,7 +120,7 @@ export default function App() {
           </div>
           <div className='text-center mt-auto pt-4 border-t border-white/10'>
             <p className='text-[#9dabb9] text-lg font-medium leading-normal'>
-              Total de passageiros hoje
+              Total de passageiros na estação hoje
             </p>
             <p className='text-white tracking-tight text-5xl font-bold leading-none mt-2'>
               {estacaoNorte?.totalHoje ?? '---'}

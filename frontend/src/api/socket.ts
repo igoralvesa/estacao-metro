@@ -4,7 +4,8 @@ import { io, Socket } from 'socket.io-client';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 // default give-up timeout (ms) when attempting to connect
-const DEFAULT_CONNECT_TIMEOUT = Number(import.meta.env.VITE_SOCKET_CONNECT_TIMEOUT_MS) || 10_000;
+const DEFAULT_CONNECT_TIMEOUT =
+  Number(import.meta.env.VITE_SOCKET_CONNECT_TIMEOUT_MS) || 10_000;
 
 let socket: Socket | null = null;
 let _giveUpTimer: ReturnType<typeof setTimeout> | null = null;
@@ -111,6 +112,7 @@ export type FrontendState = {
   proximoTrem: { ocupados: number; total: number };
   estacaoNorte: { aguardando: number; totalHoje: number };
   ultimaAtualizacao: string;
+  daily_total: number;
 };
 
 export default {
